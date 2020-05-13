@@ -12,7 +12,7 @@
 | Creates an index         | false                                          |
 | Implements summarization | Currently, the app does not generate summaries |
 
-Dashboards and reports on Bricata Metadata and alerts in Splunk.
+Dashboards  on Bricata Metadata and alerts in Splunk.
 
 ## Scripts and binaries
 
@@ -35,10 +35,7 @@ Version 1.0.0 of Bricata App for Splunk is compatible with:
 
 ## Overview
 
-Many organizations is IDS/IPS devices and software as their first line of defense against attackers. This app provides Splunk dashboards, forms, and reports which can be used to explore your IDS events across your different sourcetypes.
-
-To do this, the app relies on the Splunk Common Information Model (CIM) for IDS attack events. This means that the app can report on any intrusion data, as long as it has been on-boarded properly, and is available through the [Intrusion Detection data model](http://docs.splunk.com/Documentation/CIM/latest/User/IntrusionDetection), including network, host, wireless, and application products.
-
+The Bricata app for Splunk provides dashboards that can be used to discover and hunt through data and alerts created by the Bricata platform.
 
 ## Available Dashboards
 
