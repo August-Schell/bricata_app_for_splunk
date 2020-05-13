@@ -1,0 +1,276 @@
+<form theme="dark">
+  <label>Connection Data</label>
+  <fieldset submitButton="true">
+    <input type="multiselect" token="s_host">
+      <label>Sensor selection</label>
+      <fieldForLabel>host</fieldForLabel>
+      <fieldForValue>host</fieldForValue>
+      <search>
+        <query>| metadata type=hosts `bricata_index`</query>
+        <earliest>-24h@h</earliest>
+        <latest>now</latest>
+      </search>
+      <valuePrefix>host="</valuePrefix>
+      <valueSuffix>"</valueSuffix>
+      <delimiter>  OR </delimiter>
+      <choice value="*">All</choice>
+      <initialValue>*</initialValue>
+    </input>
+    <input type="dropdown" token="s_action" searchWhenChanged="false">
+      <label>Action</label>
+      <fieldForLabel>action</fieldForLabel>
+      <fieldForValue>action</fieldForValue>
+      <search>
+        <query>`bricata_index` (sourcetype=bricata:conn:*) | stats values(action)</query>
+        <earliest>-24h@h</earliest>
+        <latest>now</latest>
+      </search>
+      <choice value="allowed">Allowed</choice>
+      <choice value="blocked">Blocked</choice>
+      <choice value="NOT (allowed OR blocked)">Other</choice>
+      <choice value="*">All</choice>
+      <prefix>action="</prefix>
+      <suffix>"</suffix>
+      <default>*</default>
+      <initialValue>*</initialValue>
+    </input>
+    <input type="text" token="s_src_ip">
+      <label>Source IP</label>
+      <prefix>src_ip="</prefix>
+      <suffix>"</suffix>
+      <default>*</default>
+    </input>
+    <input type="text" token="s_src_port">
+      <label>Source Port</label>
+      <prefix>src_port="</prefix>
+      <suffix>"</suffix>
+      <default>*</default>
+    </input>
+    <input type="text" token="s_dest_ip">
+      <label>Destination IP</label>
+      <prefix>dest_ip="</prefix>
+      <suffix>"</suffix>
+      <default>*</default>
+    </input>
+    <input type="text" token="s_dest_port">
+      <label>Destination Port</label>
+      <prefix>dest_port="</prefix>
+      <suffix>"</suffix>
+      <default>*</default>
+    </input>
+    <input type="text" token="s_flow_id">
+      <label>Flow ID</label>
+      <default>*</default>
+    </input>
+    <input type="time" token="s_time">
+      <label>Time Range</label>
+      <default>
+        <earliest>-24h@h</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <title>Connections That Were Not "Normal establishment and termination"</title>
+      <chart>
+        <search>
+          <query>`bricata_index` (sourcetype=bricata:conn:*) $s_host$  $s_src_ip$ $s_src_port$ $s_dest_ip$ $s_dest_port$ $s_flow_id$ conn_state!="sf" | stats count by conn_state_meaning  | sort - count</query>
+          <earliest>$s_time.earliest$</earliest>
+          <latest>$s_time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.abbreviation">none</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.abbreviation">none</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.abbreviation">none</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">pie</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.mode">standard</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="charting.lineWidth">2</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>Top Connections by Source IP</title>
+      <chart>
+        <search>
+          <query>`bricata_index` (sourcetype=bricata:conn:*) $s_host$ $s_action$ $s_src_ip$ $s_src_port$ $s_dest_ip$ $s_dest_port$ $s_flow_id$ | stats count by src_ip | sort - count</query>
+          <earliest>$s_time.earliest$</earliest>
+          <latest>$s_time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.abbreviation">none</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.abbreviation">none</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.abbreviation">none</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">pie</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.mode">standard</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="charting.lineWidth">2</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>Top Connections by Destination IP</title>
+      <chart>
+        <search>
+          <query>`bricata_index` (sourcetype=bricata:conn:*) $s_host$ $s_action$ $s_src_ip$ $s_src_port$ $s_dest_ip$ $s_dest_port$ $s_flow_id$ | stats count by dest_ip | sort - count</query>
+          <earliest>$s_time.earliest$</earliest>
+          <latest>$s_time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.abbreviation">none</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.abbreviation">none</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.abbreviation">none</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">pie</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.mode">standard</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="charting.lineWidth">2</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Connections By App and Destination Port</title>
+      <table>
+        <search>
+          <query>`bricata_index` (sourcetype=bricata:conn:*) $s_host$ $s_action$ $s_src_ip$ $s_src_port$ $s_dest_ip$ $s_dest_port$ $s_flow_id$ | stats count by app dest_port | sort - count</query>
+          <earliest>$s_time.earliest$</earliest>
+          <latest>$s_time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">10</option>
+        <option name="drilldown">cell</option>
+        <drilldown>
+          <link target="_blank">search?q=`bricata_index`%20(sourcetype=bricata:conn:*)%20$s_host$%20$s_action$%20$s_src_ip$%20$s_src_port$%20$s_dest_ip$%20$s_flow_id$%20app=$row.app$%20dest_port=$row.dest_port$&amp;earliest=$s_time.earliest$&amp;latest=$s_time.latest$</link>
+        </drilldown>
+      </table>
+    </panel>
+    <panel>
+      <title>Connections by Source IP/Port</title>
+      <table>
+        <search>
+          <query>`bricata_index` (sourcetype=bricata:conn:*) $s_host$ $s_action$ $s_src_ip$ $s_src_port$ $s_dest_ip$ $s_dest_port$ $s_flow_id$ | stats count by src_ip src_port  | sort - count</query>
+          <earliest>$s_time.earliest$</earliest>
+          <latest>$s_time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="drilldown">cell</option>
+        <drilldown>
+          <link target="_blank">search?q=`bricata_index`%20(sourcetype=(sourcetype=bricata:conn:*)%20$s_host$%20$s_action$%20$s_dest_ip$%20$s_dest_port$%20$s_flow_id$%20src_ip=$row.src_ip$%20src_port=$row.src_port$&amp;earliest=$s_time.earliest$&amp;latest=$s_time.latest$</link>
+        </drilldown>
+      </table>
+    </panel>
+    <panel>
+      <title>Connections by Destination IP/Port</title>
+      <table>
+        <search>
+          <query>`bricata_index` (sourcetype=bricata:conn:*) $s_host$ $s_action$ $s_src_ip$ $s_src_port$ $s_dest_ip$ $s_dest_port$ $s_flow_id$ | stats count by dest_ip dest_port | sort - count</query>
+          <earliest>$s_time.earliest$</earliest>
+          <latest>$s_time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="drilldown">cell</option>
+        <drilldown>
+          <link target="_blank">search?q=`bricata_index`%20(sourcetype=(sourcetype=bricata:conn:*)%20$s_host$%20$s_action$%20$s_src_ip$%20$s_src_port$%20$s_flow_id$%20dest_ip=$row.dest_ip$%20dest_port=$row.dest_port$&amp;earliest=$s_time.earliest$&amp;latest=$s_time.latest$</link>
+        </drilldown>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Connection Flow Detail</title>
+      <table>
+        <search>
+          <query>`bricata_index` (sourcetype=bricata:conn:*) $s_host$ $s_action$ $s_src_ip$ $s_src_port$ $s_dest_ip$ $s_dest_port$ $s_flow_id$ | table _time action app conn_state src_ip src_port orig_bytes dest_ip dest_port resp_bytes flow_id  | sort + _time</query>
+          <earliest>$s_time.earliest$</earliest>
+          <latest>$s_time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">20</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">cell</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+        <drilldown>
+          <link target="_blank">/app/bricata_app_for_splunk/flow_id_detail?s_flow_id=$row.flow_id$</link>
+        </drilldown>
+      </table>
+    </panel>
+  </row>
+</form>

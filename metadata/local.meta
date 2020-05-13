@@ -1,0 +1,135 @@
+[app/ui]
+version = 8.0.2.1
+modtime = 1585070300.391123000
+
+[app/launcher]
+version = 8.0.2.1
+modtime = 1585070300.392517000
+
+[views/flow_id_data]
+version = 8.0.2.1
+modtime = 1589304114.761484000
+
+[views/connection_data]
+version = 8.0.2.1
+modtime = 1588276124.796221000
+
+[views/flow_id_detail]
+version = 8.0.2.1
+modtime = 1588285805.365824000
+
+[views/file_id_detail]
+version = 8.0.2.1
+modtime = 1585088396.990665000
+
+[views/Suricata]
+version = 8.0.2.1
+modtime = 1588973033.124078000
+
+[views/consolidated_brosnort_detail]
+version = 8.0.2.1
+modtime = 1588206663.936422000
+
+[views/home]
+version = 8.0.2.1
+modtime = 1589223167.872399000
+
+[views/dns_data]
+version = 8.0.2.1
+modtime = 1588710200.431935000
+
+[views/dpd_data]
+version = 8.0.2.1
+modtime = 1588276069.089152000
+
+[views/ntlm_data]
+version = 8.0.2.1
+modtime = 1589227318.926567000
+
+[views/http_data]
+version = 8.0.2.1
+modtime = 1588112789.846130000
+
+[views/file_data]
+version = 8.0.2.1
+modtime = 1588293021.169910000
+
+[views/Cylance]
+version = 8.0.2.1
+modtime = 1588975823.713773000
+
+[views/Bro_Alerts]
+version = 8.0.2.1
+modtime = 1588201676.545278000
+
+[views/consolidated_brosnort_data]
+version = 8.0.2.1
+modtime = 1588283922.117946000
+
+[views/bricata_analytics]
+version = 8.0.2.1
+modtime = 1588263858.474016000
+
+[views/weird_data]
+version = 8.0.2.1
+modtime = 1585344805.081374000
+
+[views/ssl_data]
+version = 8.0.2.1
+modtime = 1585348154.055458000
+
+[views/smb_mapping_data]
+version = 8.0.2.1
+modtime = 1585350490.807509000
+
+[views/smb_data]
+version = 8.0.2.1
+modtime = 1585424782.482652000
+
+[views/file_id_data]
+version = 8.0.2.1
+modtime = 1589302554.138638000
+
+[views/pe_data]
+version = 8.0.2.1
+modtime = 1588339806.247221000
+
+[views/x509_data]
+version = 8.0.2.1
+modtime = 1588339846.315602000
+
+[macros/bricata_index]
+version = 8.0.2.1
+modtime = 1589309998.229555000
+
+[views/ftp_data]
+version = 8.0.2.1
+modtime = 1589212110.645535000
+
+[views/consolidated_bro_alert_data]
+version = 8.0.2.1
+modtime = 1588286573.657591000
+
+[views/consolidated_bro_alert_detail]
+version = 8.0.2.1
+modtime = 1588286707.683032000
+
+[views/bricata_tops]
+version = 8.0.2.1
+modtime = 1589223882.796519000
+
+[views/Bricata_Alerts]
+version = 8.0.2.1
+modtime = 1588975841.350443000
+
+[views/consolidated_alert_detail]
+version = 8.0.2.1
+modtime = 1588973483.095529000
+
+[views/consolidated_alert_data]
+version = 8.0.2.1
+modtime = 1589233222.391068000
+
+[views/modbus_data]
+version = 8.0.2.1
+modtime = 1589212080.338674000

@@ -1,0 +1,174 @@
+<form theme="dark">
+  <label>RDP Data</label>
+  <fieldset submitButton="true">
+    <input type="multiselect" token="s_host">
+      <label>Sensor Selection</label>
+      <fieldForLabel>host</fieldForLabel>
+      <fieldForValue>host</fieldForValue>
+      <search>
+        <query>| metadata type=hosts `bricata_index`</query>
+        <earliest>0</earliest>
+        <latest></latest>
+      </search>
+      <valuePrefix>host="</valuePrefix>
+      <valueSuffix>"</valueSuffix>
+      <delimiter>  OR </delimiter>
+      <choice value="*">All</choice>
+      <default>*</default>
+      <initialValue>*</initialValue>
+    </input>
+    <input type="text" token="s_src_ip">
+      <label>Source IP</label>
+      <prefix>src_ip="</prefix>
+      <suffix>"</suffix>
+      <default>*</default>
+    </input>
+    <input type="text" token="s_dest_ip">
+      <label>Destination IP</label>
+      <prefix>dest_ip="</prefix>
+      <suffix>"</suffix>
+      <default>*</default>
+    </input>
+    <input type="text" token="s_flow_id">
+      <label>Flow ID</label>
+      <default>*</default>
+    </input>
+    <input type="time" token="s_time">
+      <label>Time Range</label>
+      <default>
+        <earliest>-24h@h</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <title>Top RDP Events by Source IP</title>
+      <chart>
+        <search>
+          <query>`bricata_index` (sourcetype=bricata:rdp:*) $s_host$  $s_src_ip$ $s_dest_ip$  $s_flow_id$ | stats count by src_ip | sort - count</query>
+          <earliest>$s_time.earliest$</earliest>
+          <latest>$s_time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.abbreviation">none</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.abbreviation">none</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.abbreviation">none</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">pie</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.mode">standard</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="charting.lineWidth">2</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>Top RDP Events by Destination IP</title>
+      <chart>
+        <search>
+          <query>`bricata_index` (sourcetype=bricata:rdp:*) $s_host$  $s_src_ip$ $s_dest_ip$  $s_flow_id$ | stats count by dest_ip | sort - count</query>
+          <earliest>$s_time.earliest$</earliest>
+          <latest>$s_time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.abbreviation">none</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.abbreviation">none</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.abbreviation">none</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">pie</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.mode">standard</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="charting.lineWidth">2</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>RDP Detail</title>
+      <table>
+        <search>
+          <query>`bricata_index` (sourcetype=bricata:rdp:*) $s_host$  $s_src_ip$ $s_dest_ip$  $s_flow_id$ | table _time  src_ip src_port dest_ip dest_port security_protocol cookie cert_count result flow_id | sort + _time</query>
+          <earliest>$s_time.earliest$</earliest>
+          <latest>$s_time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">20</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>RDP by Flow ID - Detail</title>
+      <table>
+        <search>
+          <query>`bricata_index` (sourcetype=bricata:modbus:*) $s_host$ $s_src_ip$ $s_dest_ip$  $s_flow_id$ | stats min(_time) AS firstSeen max(_time) AS lastSeen values(src_ip) AS src_ip values(src_port) AS src_port values(dest_ip) AS dest_ip values(dest_port) AS dest_port values(security_protocol) AS security_protocol values(cookie) as cookie values(cert_count) as cert_count values(result) as result by flow_id | eval firstSeen=strftime(firstSeen,"%m/%d/%Y %H:%M:%S") | eval lastSeen=strftime(lastSeen,"%m/%d/%Y %H:%M:%S") | table flow_id firstSeen lastSeen src_ip src_port dest_ip dest_port security_protocol cookie cert_count result | sort + firstSeen</query>
+          <earliest>$s_time.earliest$</earliest>
+          <latest>$s_time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">20</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+  </row>
+</form>

@@ -1,0 +1,39 @@
+<nav search_view="search" color="#239128" >
+        <view name="home" default='true' />
+	<collection label="Bricata Metadata">
+		<collection label="Network">
+  			<view name="flow_id_data" default='true' />
+    		<view name="connection_data" />
+  			<view name="dns_data" />
+  			<view name="dpd_data" />
+  			<view name="ntlm_data" />
+  			<view name="http_data" />
+                        <view name="ftp_data" />
+                        <view name="modbus_data" />
+                        <view name="ssh_data" />
+                        <view name="rdp_data" />
+    		        <view name="smb_data" />
+  			<view name="smb_mapping_data" />
+  			<view name="ssl_data" />
+  			<view name="weird_data" />    
+		</collection>
+		        <collection label="Files">
+  			<view name="file_id_data" />
+    		        <view name="file_data" />
+                        <view name="pe_data" />
+  			<view name="x509_data" />
+		</collection>
+	</collection>
+	<collection label="Bricata Alerts">
+		<view name="Suricata" />
+		<view name="Cylance" />
+		<view name="Bricata_Alerts" />
+      	<view name="consolidated_alert_data" />
+  	</collection> 
+  	<collection label="Analytics">
+		<view name="bricata_tops" />
+  	</collection>      
+        <collection label="search">
+                <view name="search" default='true' />	
+        </collection>
+</nav>

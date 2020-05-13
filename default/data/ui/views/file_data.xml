@@ -1,0 +1,217 @@
+<form theme="dark">
+  <label>File Data</label>
+  <fieldset submitButton="true" autoRun="true">
+    <input type="multiselect" token="s_host">
+      <label>Sensor Selection</label>
+      <fieldForLabel>host</fieldForLabel>
+      <fieldForValue>host</fieldForValue>
+      <search>
+        <query>| metadata type=hosts `bricata_index`</query>
+        <earliest>0</earliest>
+        <latest></latest>
+      </search>
+      <valuePrefix>host="</valuePrefix>
+      <valueSuffix>"</valueSuffix>
+      <delimiter>  OR </delimiter>
+      <choice value="*">All</choice>
+      <default>*</default>
+      <initialValue>*</initialValue>
+    </input>
+    <input type="multiselect" token="s_mime_type">
+      <label>Mime Type</label>
+      <fieldForLabel>mime_type</fieldForLabel>
+      <fieldForValue>mime_type</fieldForValue>
+      <search>
+        <query>$s_host$ `bricata_index` (sourcetype=bricata:files:*) | dedup mime_type | sort mime_type</query>
+      </search>
+      <default>*</default>
+      <delimiter> OR </delimiter>
+      <valuePrefix>mime_type="</valuePrefix>
+      <valueSuffix>"</valueSuffix>
+      <choice value="*">All</choice>
+    </input>
+    <input type="text" token="s_src_ip">
+      <label>Source IP</label>
+      <prefix>src_ip="</prefix>
+      <suffix>"</suffix>
+      <default>*</default>
+    </input>
+    <input type="text" token="s_dest_ip">
+      <label>Destination IP</label>
+      <prefix>dest_ip="</prefix>
+      <suffix>"</suffix>
+      <default>*</default>
+    </input>
+    <input type="text" token="s_conn_uids">
+      <label>Connection UID</label>
+      <default>*</default>
+      <prefix>conn_uids="</prefix>
+      <suffix>"</suffix>
+    </input>
+    <input type="text" token="s_file_name" searchWhenChanged="true">
+      <label>file_name</label>
+      <default>*</default>
+      <prefix>file_name="</prefix>
+      <suffix>"</suffix>
+    </input>
+    <input type="time" token="s_time">
+      <label>Time Range</label>
+      <default>
+        <earliest>-24h@h</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <title>Count by Attachment Type</title>
+      <chart>
+        <search>
+          <query>`bricata_index` (sourcetype=bricata:files:*) $s_host$ $s_mime_type$ $s_src_ip$ $s_dest_ip$ $s_conn_uids$ $s_file_name$ | stats count by mime_type  | sort - count</query>
+          <earliest>$s_time.earliest$</earliest>
+          <latest>$s_time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.abbreviation">none</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.abbreviation">none</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.abbreviation">none</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">pie</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.mode">standard</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="charting.lineWidth">2</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>Top Transmitted File Sources</title>
+      <chart>
+        <search>
+          <query>`bricata_index` (sourcetype=bricata:files:*) $s_host$ $s_mime_type$ $s_src_ip$ $s_dest_ip$ $s_conn_uids$ $s_file_name$ | stats count by src_ip | sort - count</query>
+          <earliest>$s_time.earliest$</earliest>
+          <latest>$s_time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.abbreviation">none</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.abbreviation">none</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.abbreviation">none</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">pie</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.mode">standard</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="charting.lineWidth">2</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>Top Transmitted File Destinations</title>
+      <chart>
+        <search>
+          <query>`bricata_index` (sourcetype=bricata:files:*) $s_host$ $s_mime_type$ $s_src_ip$ $s_dest_ip$ $s_conn_uids$ $s_file_name$ | stats count by dest_ip | sort - count</query>
+          <earliest>$s_time.earliest$</earliest>
+          <latest>$s_time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.abbreviation">none</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.abbreviation">none</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.abbreviation">none</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">pie</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.mode">standard</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="charting.lineWidth">2</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Pivot to Connection IDs</title>
+      <table>
+        <search>
+          <query>`bricata_index` (sourcetype=bricata:files:*) $s_host$ $s_mime_type$ $s_src_ip$ $s_dest_ip$ $s_conn_uids$ $s_file_name$ | table _time dest_ip src_ip conn_uids mime_type file_name</query>
+          <earliest>$s_time.earliest$</earliest>
+          <latest>$s_time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">20</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">cell</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+  </row>
+</form>

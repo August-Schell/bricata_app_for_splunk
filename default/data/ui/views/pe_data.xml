@@ -1,0 +1,106 @@
+<form theme="dark">
+  <label>PE Data</label>
+  <fieldset submitButton="true">
+    <input type="multiselect" token="s_host">
+      <label>Host Machine</label>
+      <fieldForLabel>host</fieldForLabel>
+      <fieldForValue>host</fieldForValue>
+      <search>
+        <query>| metadata type=hosts `bricata_index`</query>
+        <earliest>0</earliest>
+        <latest></latest>
+      </search>
+      <valuePrefix>host="</valuePrefix>
+      <valueSuffix>"</valueSuffix>
+      <delimiter>  OR </delimiter>
+      <choice value="*">All</choice>
+      <default>*</default>
+      <initialValue>*</initialValue>
+    </input>
+    <input type="multiselect" token="s_os">
+      <label>Operating System</label>
+      <fieldForLabel>os</fieldForLabel>
+      <fieldForValue>os</fieldForValue>
+      <search>
+        <query>$s_host$ `bricata_index` (sourcetype=bricata:pe:*) | dedup os | sort os</query>
+        <earliest>-7d@h</earliest>
+        <latest>now</latest>
+      </search>
+      <default>*</default>
+      <delimiter> OR </delimiter>
+      <valuePrefix>os="</valuePrefix>
+      <valueSuffix>"</valueSuffix>
+    </input>
+    <input type="text" token="s_file_id">
+      <label>File ID</label>
+      <default>*</default>
+    </input>
+    <input type="time" token="s_time">
+      <label>Time Range</label>
+      <default>
+        <earliest>-24h@h</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <title>Count by Machine Type</title>
+      <table>
+        <search>
+          <query>`bricata_index` (sourcetype=bricata:pe:*) $s_host$ $s_os$ $s_file_id$ | stats count by machine os subsystem  | sort - count</query>
+          <earliest>$s_time.earliest$</earliest>
+          <latest>$s_time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>PE Attributes</title>
+      <table>
+        <search>
+          <query>`bricata_index` (sourcetype=bricata:pe:*) $s_host$ $s_os$ $s_file_id$ | eval compile_ts=strftime(compile_ts, "%m/%d/%Y %H:%M:%S") | eval has_cert_table=if((has_cert_table=="T" OR has_cert_table=="true"),"True","False") | eval has_debug_data=if((has_debug_data=="T" OR has_debug_data=="true" ),"True","False") | eval has_export_table=if((has_export_table=="T" OR has_export_table=="true" ),"True","False") | eval has_import_table=if((has_import_table=="T" OR has_import_table=="true" ),"True","False") | eval is_64bit=if((is_64bit=="T" OR is_64bit=="true"),"True","False") | eval is_exe=if((is_exe=="T" OR is_exe=="true"),"True","False") | eval uses_aslr=if((uses_aslr=="T" OR uses_aslr=="true"),"True","False") | eval uses_code_integrity=if((uses_code_integrity=="T" OR uses_code_integrity=="true" ),"True","False") | eval uses_dep=if((uses_dep=="T" OR uses_dep=="true"),"True","False") | eval uses_seh=if((uses_seh=="T" OR uses_seh=="true"),"True","False") |rename fuid as id | table id machine os section_names compile_ts has_cert_table has_debug_data has_export_table has_import_table is_64bit is_exe uses_aslr uses_code_integrity uses_dep uses_seh</query>
+          <earliest>$s_time.earliest$</earliest>
+          <latest>$s_time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <format type="color" field="has_cert_table">
+          <colorPalette type="map">{"True":#53A051,"False":#AF575A}</colorPalette>
+        </format>
+        <format type="color" field="has_debug_data">
+          <colorPalette type="map">{"True":#53A051,"False":#AF575A}</colorPalette>
+        </format>
+        <format type="color" field="has_export_table">
+          <colorPalette type="map">{"True":#53A051,"False":#AF575A}</colorPalette>
+        </format>
+        <format type="color" field="has_import_table">
+          <colorPalette type="map">{"True":#53A051,"False":#AF575A}</colorPalette>
+        </format>
+        <format type="color" field="is_64bit">
+          <colorPalette type="map">{"True":#53A051,"False":#AF575A}</colorPalette>
+        </format>
+        <format type="color" field="is_exe">
+          <colorPalette type="map">{"True":#53A051,"False":#AF575A}</colorPalette>
+        </format>
+        <format type="color" field="uses_aslr">
+          <colorPalette type="map">{"True":#53A051,"False":#AF575A}</colorPalette>
+        </format>
+        <format type="color" field="uses_code_integrity">
+          <colorPalette type="map">{"True":#53A051,"False":#AF575A}</colorPalette>
+        </format>
+        <format type="color" field="uses_dep">
+          <colorPalette type="map">{"True":#53A051,"False":#AF575A}</colorPalette>
+        </format>
+        <format type="color" field="uses_seh">
+          <colorPalette type="map">{"True":#53A051,"False":#AF575A}</colorPalette>
+        </format>
+      </table>
+    </panel>
+  </row>
+</form>

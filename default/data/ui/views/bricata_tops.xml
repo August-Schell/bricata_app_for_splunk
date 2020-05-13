@@ -1,0 +1,145 @@
+<form theme="dark">
+  <label>Bricata Analytics</label>
+  <fieldset submitButton="true" autoRun="true">
+    <input type="multiselect" token="s_host">
+      <label>Host Machine</label>
+      <fieldForLabel>host</fieldForLabel>
+      <fieldForValue>host</fieldForValue>
+      <search>
+        <query>| metadata type=hosts `bricata_index`</query>
+        <earliest>0</earliest>
+        <latest></latest>
+      </search>
+      <valuePrefix>host="</valuePrefix>
+      <valueSuffix>"</valueSuffix>
+      <delimiter>  OR </delimiter>
+      <choice value="*">All</choice>
+      <default>*</default>
+      <initialValue>*</initialValue>
+    </input>
+    <input type="time" token="s_time">
+      <label>Time Range</label>
+      <default>
+        <earliest>-24h@h</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <title>Top 10 Suricata Alerts</title>
+      <table>
+        <search>
+          <query>`bricata_index` $s_host$ sourcetype=bricata:suricata:* | top limit=10 signature</query>
+          <earliest>$s_time.earliest$</earliest>
+          <latest>$s_time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">10</option>
+        <option name="drilldown">cell</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+    <panel>
+      <title>Top 10 Bricata Alerts</title>
+      <table>
+        <search>
+          <query>`bricata_index` $s_host$ sourcetype="bricata:alerts:*" | top limit=10 signature</query>
+          <earliest>$s_time.earliest$</earliest>
+          <latest>$s_time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">10</option>
+        <option name="drilldown">cell</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+    <panel depends="$panel_show_ip$">
+      <title>Top 10 Cylance Alerts</title>
+      <table>
+        <search>
+          <progress>
+            <condition match="'job.resultCount' &gt; 0">
+              <set token="panel_show_ip">true</set>
+            </condition>
+            <condition>
+              <unset token="panel_show_ip"></unset>
+            </condition>
+          </progress>
+          <query>`bricata_index` $s_host$ sourcetype="bricata:cylance:*" | top limit=10 signature</query>
+          <earliest>$s_time.earliest$</earliest>
+          <latest>$s_time.latest$</latest>
+        </search>
+        <option name="count">10</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">cell</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Top 10 Metadata Events</title>
+      <table>
+        <search>
+          <query>`bricata_index` $s_host$ sourcetype="bricata:*:*" | top limit=10 sourcetype</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">cell</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+    <panel>
+      <table>
+        <title>Top Ten Event Destinations (some zeek data has null dest values)</title>
+        <search>
+          <query>`bricata_index` $s_host$ sourcetype="bricata:*:*" | top limit=10 dest_ip</query>
+          <earliest>$s_time.earliest$</earliest>
+          <latest>$s_time.latest$</latest>
+        </search>
+        <option name="drilldown">cell</option>
+      </table>
+    </panel>
+    <panel>
+      <table>
+        <title>Top 10 Event Sources (some zeek data has null source values)</title>
+        <search>
+          <query>`bricata_index` $s_host$ sourcetype="bricata:*:*" | top limit=10 src_ip</query>
+          <earliest>$s_time.earliest$</earliest>
+          <latest>$s_time.latest$</latest>
+        </search>
+        <option name="drilldown">cell</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <title>Top 10 rare file hash values</title>
+        <search>
+          <query>`bricata_index` $s_host$ sourcetype="bricata:*:*" | stats count dc(file_hash) by file_hash, file_name | top limit=10 file_hash</query>
+          <earliest>$s_time.earliest$</earliest>
+          <latest>$s_time.latest$</latest>
+        </search>
+        <option name="drilldown">cell</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+    <panel>
+      <table>
+        <title>Top 10 rare file names</title>
+        <search>
+          <query>`bricata_index` $s_host$ sourcetype="bricata:*:*" | stats count dc(file_name) by file_hash, file_name | top limit=10 file_name</query>
+          <earliest>$s_time.earliest$</earliest>
+          <latest>$s_time.latest$</latest>
+        </search>
+        <option name="drilldown">cell</option>
+      </table>
+    </panel>
+  </row>
+</form>

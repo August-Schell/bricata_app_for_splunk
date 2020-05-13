@@ -1,0 +1,388 @@
+<form theme="dark">
+  <label>Consolidated Bricata Alert Detail</label>
+  <fieldset submitButton="true">
+    <input type="time" token="s_time">
+      <label>Time Range</label>
+      <default>
+        <earliest>-24h@h</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <title>Events by Sourcetype</title>
+      <table>
+        <search>
+          <query>(`bricata_index`) src_ip=$s_src_ip$ dest_ip=$s_dest_ip$  | stats min(_time) AS firstSeen max(_time) AS lastSeen count by sourcetype | eval firstSeen=strftime(firstSeen,"%m/%d/%Y %H:%M:%S") | eval lastSeen=strftime(lastSeen,"%m/%d/%Y %H:%M:%S") | sort - count</query>
+          <earliest>$s_time.earliest$</earliest>
+          <latest>$s_time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">10</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+    <panel>
+      <title>Events by Source and Destination IPs</title>
+      <table>
+        <search>
+          <query>(`bricata_index`) src_ip=$s_src_ip$ dest_ip=$s_dest_ip$  | stats min(_time) AS firstSeen max(_time) AS lastSeen count by src_ip dest_ip | eval firstSeen=strftime(firstSeen,"%m/%d/%Y %H:%M:%S") | eval lastSeen=strftime(lastSeen,"%m/%d/%Y %H:%M:%S") | sort + firstSeen</query>
+          <earliest>$s_time.earliest$</earliest>
+          <latest>$s_time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">10</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel depends="$panel_show_suricata">
+      <title>Suricata</title>
+      <table>
+        <search>
+          <progress>
+            <condition match="'job.resultCount' &gt; 0">
+              <set token="panel_show_suricata">true</set>
+            </condition>
+            <condition>
+              <unset token="panel_show_suricata"></unset>
+            </condition>
+          </progress>
+          <query>(`bricata_index` sourcetype="bricata:suricata:*")  src_ip=$s_src_ip$ dest_ip=$s_dest_ip$   | table _time category severity src_ip src_port dest_ip dest_port transport | sort + _time</query>
+          <earliest>$s_time.earliest$</earliest>
+          <latest>$s_time.latest$</latest>
+        </search>
+        <option name="count">5</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Cylance</title>
+      <table>
+        <search>
+          <query>(`bricata_index` sourcetype="bricata:cylance:*")  src_ip=$s_src_ip$ dest_ip=$s_dest_ip$  | table _time category severity src_ip src_port dest_ip dest_port transport | sort + _time</query>
+          <earliest>$s_time.earliest$</earliest>
+          <latest>$s_time.latest$</latest>
+        </search>
+        <option name="drilldown">none</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Bricata Alerts</title>
+      <table>
+        <search>
+          <query>(`bricata_index` sourcetype="bricata:alerts:*")  src_ip=$s_src_ip$ dest_ip=$s_dest_ip$  | table _time category severity src_ip src_port dest_ip dest_port transport | sort + _time</query>
+          <earliest>$s_time.earliest$</earliest>
+          <latest>$s_time.latest$</latest>
+        </search>
+        <option name="drilldown">none</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel depends="$panel_show_conn$">
+      <title>Conn Detail</title>
+      <table>
+        <search>
+          <progress>
+            <condition match="'job.resultCount' &gt; 0">
+              <set token="panel_show_conn">true</set>
+            </condition>
+            <condition>
+              <unset token="panel_show_conn"></unset>
+            </condition>
+          </progress>
+          <query>`bricata_index` (sourcetype=bricata:conn:*) src_ip=$s_src_ip$ dest_ip=$s_dest_ip$   | table _time action app conn_state src_ip src_port orig_bytes dest_ip dest_port resp_bytes flow_id | sort + _time</query>
+          <earliest>$s_time.earliest$</earliest>
+          <latest>$s_time.latest$</latest>
+        </search>
+        <option name="count">10</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">cell</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+        <drilldown>
+          <link target="_blank">/app/bricata_app_for_splunk/flow_id_detail?s_flow_id=$row.flow_id$</link>
+        </drilldown>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel depends="$panel_show_http$">
+      <title>HTTP Detail</title>
+      <table>
+        <search>
+          <progress>
+            <condition match="'job.resultCount' &gt; 0">
+              <set token="panel_show_http">true</set>
+            </condition>
+            <condition>
+              <unset token="panel_show_http"></unset>
+            </condition>
+          </progress>
+          <query>`bricata_index` (sourcetype=bricata:http:*) src_ip=$s_src_ip$ dest_ip=$s_dest_ip$  | eval dest_host=mvindex(dest_host,1) | table _time src_ip src_port bytes_in dest_ip site dest_port bytes_out flow_id http_referrer status uri | sort + _time</query>
+          <earliest>$s_time.earliest$</earliest>
+          <latest>$s_time.latest$</latest>
+        </search>
+        <option name="count">10</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">cell</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+        <drilldown>
+          <link target="_blank">/app/bricata_app_for_splunk/flow_id_detail</link>
+        </drilldown>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel depends="$panel_show_dns$">
+      <title>DNS Detail</title>
+      <table>
+        <search>
+          <progress>
+            <condition match="'job.resultCount' &gt; 0">
+              <set token="panel_show_dns">true</set>
+            </condition>
+            <condition>
+              <unset token="panel_show_dns"></unset>
+            </condition>
+          </progress>
+          <query>`bricata_index` (sourcetype=bricata:dns:*) src_ip=$s_src_ip$ dest_ip=$s_dest_ip$  | table _time query_type src_ip src_port dest_ip dest_port query answers flow_id | sort + _time</query>
+          <earliest>$s_time.earliest$</earliest>
+          <latest>$s_time.latest$</latest>
+        </search>
+        <option name="count">10</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">cell</option>
+        <option name="percentagesRow">false</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+        <drilldown>
+          <link target="_blank">/app/bricata_app_for_splunk/flow_id_detail</link>
+        </drilldown>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel depends="$panel_show_file$">
+      <title>File Detail</title>
+      <table>
+        <search>
+          <progress>
+            <condition match="'job.resultCount' &gt; 0">
+              <set token="panel_show_file">true</set>
+            </condition>
+            <condition>
+              <unset token="panel_show_file"></unset>
+            </condition>
+          </progress>
+          <query>`bricata_index` (sourcetype=bricata:files:*) src_ip=$s_src_ip$ dest_ip=$s_dest_ip$  | table _time dest_ip src_ip conn_uids mime_type file_name file_hash</query>
+          <earliest>$s_time.earliest$</earliest>
+          <latest>$s_time.latest$</latest>
+        </search>
+        <option name="count">10</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel depends="$panel_show_ssl$">
+      <title>SSL Detail</title>
+      <table>
+        <search>
+          <progress>
+            <condition match="'job.resultCount' &gt; 0">
+              <set token="panel_show_ssl">true</set>
+            </condition>
+            <condition>
+              <unset token="panel_show_ssl"></unset>
+            </condition>
+          </progress>
+          <query>`bricata_index` (sourcetype=bricata:ssl:*) src_ip=$s_src_ip$ dest_ip=$s_dest_ip$  | table _time src_ip src_port dest_ip dest_port issuer server_name flow_id | sort + _time</query>
+          <earliest>$s_time.earliest$</earliest>
+          <latest>$s_time.latest$</latest>
+        </search>
+        <option name="count">10</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">cell</option>
+        <option name="percentagesRow">false</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+        <drilldown>
+          <link target="_blank">/app/bricata_app_for_splunk/flow_id_detail</link>
+        </drilldown>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel depends="$panel_show_weird$">
+      <title>Weird Event Detail</title>
+      <table>
+        <search>
+          <progress>
+            <condition match="'job.resultCount' &gt; 0">
+              <set token="panel_show_weird">true</set>
+            </condition>
+            <condition>
+              <unset token="panel_show_weird"></unset>
+            </condition>
+          </progress>
+          <query>`bricata_index` (sourcetype=bricata:weird:*) src_ip=$s_src_ip$ dest_ip=$s_dest_ip$  | table _time name src_ip src_port dest_ip dest_port flow_id | sort + _time</query>
+          <earliest>$s_time.earliest$</earliest>
+          <latest>$s_time.latest$</latest>
+        </search>
+        <option name="count">10</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">cell</option>
+        <option name="percentagesRow">false</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+        <drilldown>
+          <link target="_blank">/app/bricata_app_for_splunk/flow_id_detail</link>
+        </drilldown>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel depends="$panel_show_dpd$">
+      <title>DPD Event Detail</title>
+      <table>
+        <search>
+          <progress>
+            <condition match="'job.resultCount' &gt; 0">
+              <set token="panel_show_dpd">true</set>
+            </condition>
+            <condition>
+              <unset token="panel_show_dpd"></unset>
+            </condition>
+          </progress>
+          <query>`bricata_index` (sourcetype=bricata:dpd:*) src_ip=$s_src_ip$ dest_ip=$s_dest_ip$  | table _time failure_reason src_ip src_port dest_ip dest_port flow_id | sort + _time</query>
+          <earliest>$s_time.earliest$</earliest>
+          <latest>$s_time.latest$</latest>
+        </search>
+        <option name="count">20</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel depends="$panel_show_smb_mapping$">
+      <title>SMB Mapping Detail</title>
+      <table>
+        <search>
+          <progress>
+            <condition match="'job.resultCount' &gt; 0">
+              <set token="panel_show_smb_mapping">true</set>
+            </condition>
+            <condition>
+              <unset token="panel_show_smb_mapping"></unset>
+            </condition>
+          </progress>
+          <query>`bricata_index` (sourcetype=bricata:smb_mapping:*) src_ip=$s_src_ip$ dest_ip=$s_dest_ip$  | table _time service share_type path src_ip src_port  dest_ip dest_port flow_id | sort + _time</query>
+          <earliest>$s_time.earliest$</earliest>
+          <latest>$s_time.latest$</latest>
+        </search>
+        <option name="count">20</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel depends="$panel_show_smb$">
+      <title>SMB Detail</title>
+      <table>
+        <search>
+          <progress>
+            <condition match="'job.resultCount' &gt; 0">
+              <set token="panel_show_smb">true</set>
+            </condition>
+            <condition>
+              <unset token="panel_show_smb"></unset>
+            </condition>
+          </progress>
+          <query>`bricata_index` (sourcetype=bricata:smb_files:* ) src_ip=$s_src_ip$ dest_ip=$s_dest_ip$  | table _time action name size src_ip src_port  dest_ip dest_port times_accessed times_changed times_created times_modified flow_id | sort + _time</query>
+          <earliest>$s_time.earliest$</earliest>
+          <latest>$s_time.latest$</latest>
+        </search>
+        <option name="count">20</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel depends="$panel_show_ntlm$">
+      <title>NTLM Detail</title>
+      <table>
+        <search>
+          <progress>
+            <condition match="'job.resultCount' &gt; 0">
+              <set token="panel_show_ntlm">true</set>
+            </condition>
+            <condition>
+              <unset token="panel_show_ntlm"></unset>
+            </condition>
+          </progress>
+          <query>`bricata_index` (sourcetype=bricata:ntlm:*) src_ip=$s_src_ip$ dest_ip=$s_dest_ip$  | table _time server_nb_computer_name domainname server_dns_computer_name server_tree_name src_ip src_port dest_ip dest_port flow_id | sort + _time</query>
+          <earliest>$s_time.earliest$</earliest>
+          <latest>$s_time.latest$</latest>
+        </search>
+        <option name="count">20</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+  </row>
+</form>

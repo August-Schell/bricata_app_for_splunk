@@ -1,0 +1,125 @@
+<dashboard script="runPageScript.js" theme="dark">
+  <label>Introduction</label>
+  <row>
+    <panel>
+      <html>
+              <td>
+                <img src="/static/app/bricata_app_for_splunk/images/Bricata-Logo.png" width="25%"/>
+              </td>
+ <table>
+  <tbody>
+    <tr>
+      <td valign="top"> <h2>Introduction to Bricata app for Splunk</h2>
+              </td>
+    </tr>
+    <tr>
+              <td>
+<p>This app provides a means of displaying and hunting through logs and alerts produced by Bricata sensors.</p>
+</td>
+    </tr>
+  </tbody>
+</table>
+      <h2>
+        <b>Navigation</b>
+      </h2>
+      <p>
+         <a href="https://bricata.com/" target="_blank">Bricata Website</a>
+               </p>
+               <p>
+         <a href="/app/bricata_app_for_splunk/flow_id_data">Get started exploring your metadata</a>
+         </p>
+         <p>
+         <a href="/app/bricata_app_for_splunk/Suricata">Get started exploring your Suricata Alerts</a>
+         </p>
+         <p>
+         <a href="/app/bricata_app_for_splunk/Bro_Alerts">Get started exploring your Bricata Bro Alerts</a>
+         </p>
+         <p>
+         <a href="/app/bricata_app_for_splunk/Cylance">Get started exploring your Bricata Cylance Alerts</a>
+         
+      </p>
+   </html>
+    </panel>
+    <panel>
+      <html>
+        <h1>Make sure to change the index value in the macro `bricata_index`</h1>
+        <p>
+        <h1>Common Sourcetype Naming Schema.</h1>
+        </p>
+<p>
+          <br>JSON Data Sourcetypes</br>
+        </p>
+<h3>bricata:{metadata_type}:raw</h3>
+<p>
+          <br>Syslog Sourcetypes</br>
+        </p>
+<h3>bricata:{metadata_type}:syslog</h3>
+<p>
+          <br>Alert Sourcetypes</br>
+        </p>
+<h3>bricata:cylance:raw   bricata:suricata:raw    bricata:alerts:raw</h3>
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <chart>
+        <title>Indexed Events over Time</title>
+        <search>
+          <query>| tstats prestats=t count where `bricata_index` by index, _time | timechart count by index</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="charting.chart">area</option>
+        <option name="charting.drilldown">all</option>
+      </chart>
+    </panel>
+    <panel>
+      <chart>
+        <title>Sourcetypes over Time</title>
+        <search>
+          <query>| tstats prestats=t count where `bricata_index` by sourcetype, _time | timechart count by sourcetype</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.chart">area</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="trellis.enabled">0</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <title>Avalable Bricata Sensors</title>
+        <search>
+          <query>| tstats  count where `bricata_index` by host |dedup host | fields host</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">row</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">true</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+    <panel>
+      <table>
+        <search>
+          <query>| tstats count where `bricata_index` by sourcetype |sort - count</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+  </row>
+</dashboard>
